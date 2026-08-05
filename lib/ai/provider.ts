@@ -61,7 +61,39 @@ export class OpenRouterProvider implements AiProvider {
   }
 }
 
+export class GroqProvider implements AiProvider {
+  readonly name = "groq";
+  constructor(private readonly apiKey: string, private readonly model = "openai/gpt-oss-120b") {}
+
+  async healthCheck() { return Boolean(this.apiKey); }
+
+  async generate(request: ChatRequest) {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { authorization: `Bearer ${this.apiKey}`, "content-type": "application/json" },
+      body: JSON.stringify({
+        model: this.model,
+        temperature: 0.65,
+        max_completion_tokens: 1200,
+        messages: [
+          { role: "system", content: "You are Tashi, a warm, precise AI teammate in a collaborative room. Answer the user’s actual question directly. Be concise but sufficiently explanatory, constructive, and practical. Use clear markdown when it improves readability. Never claim to know something you do not know." },
+          ...request.history.map(turn => ({ role: turn.ai ? "assistant" : "user", content: `${turn.author}: ${turn.body}` })),
+          { role: "user", content: request.prompt },
+        ],
+      }),
+    });
+    if (!response.ok) {
+      const retryAfter = response.headers.get("retry-after");
+      throw new Error(response.status === 429 ? `Groq rate limit reached${retryAfter ? `; retry after ${retryAfter}s` : ""}` : `Groq returned ${response.status}`);
+    }
+    const payload = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    return payload.choices?.[0]?.message?.content?.trim() || "I couldn’t form a response. Please try asking that another way.";
+  }
+}
+
 export function createProvider(): AiProvider {
-  const key = process.env.OPENROUTER_API_KEY;
-  return key ? new OpenRouterProvider(key, process.env.OPENROUTER_MODEL) : new DemoProvider();
+  const groqKey = process.env.GROQ_API_KEY;
+  if (groqKey) return new GroqProvider(groqKey, process.env.GROQ_MODEL);
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
+  return openRouterKey ? new OpenRouterProvider(openRouterKey, process.env.OPENROUTER_MODEL) : new DemoProvider();
 }
