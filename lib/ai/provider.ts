@@ -19,6 +19,10 @@ export class DemoProvider implements AiProvider {
 
   async generate(request: ChatRequest) {
     const prompt = request.prompt.toLowerCase();
+    const compactPrompt = prompt.replace(/\s+/g, "").replace(/²/g, "2");
+    if (compactPrompt.includes("e=mc2") || compactPrompt.includes("emc2") || prompt.includes("mass-energy equivalence")) {
+      return "**E = mc²** is Einstein’s mass–energy equivalence equation. It says that mass and energy are two forms of the same thing.\n\n- **E** is energy, measured in joules.\n- **m** is mass, measured in kilograms.\n- **c** is the speed of light: about **300,000,000 metres per second**.\n- **c²** means that this already enormous speed is multiplied by itself.\n\nBecause **c²** is such a huge number, even a tiny amount of mass represents an enormous amount of energy. For example, if one gram of matter could be converted completely into energy, it would release roughly **90 trillion joules**.\n\nThe equation helps explain how the Sun produces energy, why nuclear reactions release much more energy than chemical reactions, and why an object’s energy contributes to its mass. It does **not** mean ordinary objects suddenly travel at the speed of light; it describes the amount of rest energy contained in their mass.";
+    }
     if (prompt.includes("7 continent") || prompt.includes("seven continent") || (prompt.includes("continent") && prompt.includes("name"))) {
       return "The seven continents are:\n\n1. **Africa**\n2. **Antarctica**\n3. **Asia**\n4. **Europe**\n5. **North America**\n6. **South America**\n7. **Australia** (often grouped with nearby Pacific islands as **Oceania**)";
     }
@@ -31,7 +35,7 @@ export class DemoProvider implements AiProvider {
     if (prompt.includes("idea") || prompt.includes("brainstorm")) {
       return "Here are three directions worth exploring:\n\n**Quiet guidance** — suggest the next step without interrupting the room.\n\n**Shared memory** — surface decisions and open questions at the right moment.\n\n**Thoughtful handoffs** — turn discussion into a clear owner, outcome, and follow-up.";
     }
-    return `I’m with you. A useful way to move this forward is to separate the **outcome you want**, the **constraint that matters most**, and the **smallest test** that would teach us something. What outcome should we optimise for first?`;
+    return "I don’t have a live general-purpose AI model connected yet, so I can’t answer that reliably without guessing. Tashi is currently running in demonstration mode. Connect an AI provider in Settings to unlock open-ended questions.";
   }
 }
 
