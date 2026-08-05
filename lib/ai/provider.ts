@@ -19,6 +19,9 @@ export class DemoProvider implements AiProvider {
 
   async generate(request: ChatRequest) {
     const prompt = request.prompt.toLowerCase();
+    if (prompt.includes("7 continent") || prompt.includes("seven continent") || (prompt.includes("continent") && prompt.includes("name"))) {
+      return "The seven continents are:\n\n1. **Africa**\n2. **Antarctica**\n3. **Asia**\n4. **Europe**\n5. **North America**\n6. **South America**\n7. **Australia** (often grouped with nearby Pacific islands as **Oceania**)";
+    }
     if (prompt.includes("principle") || prompt.includes("design")) {
       return "I’d use three principles:\n\n**1. Begin with clarity** — make the next useful action unmistakable.\n\n**2. Keep the human context** — let the conversation, not the tool, remain the centre of attention.\n\n**3. Earn complexity** — reveal deeper controls only when they become useful.\n\nThat gives the team a simple test for every decision: does this make collaboration feel clearer, warmer, or more capable?";
     }

@@ -46,6 +46,7 @@ export function TashiApp() {
   const [draft, setDraft] = useState("");
   const [replying, setReplying] = useState<Message | null>(null);
   const [thinking, setThinking] = useState(false);
+  const [askMode, setAskMode] = useState(false);
   const [dark, setDark] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [membersOpen, setMembersOpen] = useState(false);
@@ -74,6 +75,7 @@ export function TashiApp() {
     try {
       const response = await fetch("/api/ai/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt, room: currentRoom.name, history: visibleMessages.slice(-8).map(({ author, body, ai }) => ({ author, body, ai })) }) });
       const payload = await response.json() as { message?: string };
+      if (!response.ok) throw new Error("Tashi request failed");
       setMessages(items => [...items, { id: crypto.randomUUID(), roomId: activeRoom, author: "Tashi", initials: "T", color: "tashi", time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), ai: true, body: payload.message ?? "I’m here. Let’s think it through together." }]);
     } catch {
       setMessages(items => [...items, { id: crypto.randomUUID(), roomId: activeRoom, author: "Tashi", initials: "T", color: "tashi", time: "now", ai: true, body: "I couldn’t reach my thinking service just now. Your message is safe—please try once more in a moment." }]);
@@ -87,7 +89,9 @@ export function TashiApp() {
     const message: Message = { id: crypto.randomUUID(), roomId: activeRoom, author: "You", initials: "RK", color: "blue", time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), body, replyTo: replying ? { author: replying.author, text: replying.body.slice(0, 72) } : undefined };
     setMessages(items => [...items, message]);
     setDraft(""); setReplying(null);
-    if (/(@tashi|ask tashi)/i.test(body)) void askTashi(body.replace(/@tashi/ig, "").trim());
+    const shouldAskTashi = askMode || /(@tashi|ask tashi)/i.test(body);
+    setAskMode(false);
+    if (shouldAskTashi) void askTashi(body.replace(/@tashi/ig, "").trim());
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -131,7 +135,7 @@ export function TashiApp() {
           <div ref={bottomRef} />
         </div>
 
-        <footer className="composer-wrap">{replying && <div className="replying"><span>Replying to <strong>{replying.author}</strong></span><button onClick={() => setReplying(null)}>×</button></div>}<form className="composer" onSubmit={sendMessage}><button type="button" className="add-button" aria-label="Add attachment">＋</button><textarea value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={onKeyDown} placeholder={`Message #${currentRoom.name.toLowerCase().replaceAll(" ", "-")}`} rows={1} /><button type="button" className="ask-button" onClick={() => { setDraft(value => value.includes("@Tashi") ? value : `${value}${value ? " " : ""}@Tashi `); }}>✦ Ask Tashi</button><button type="submit" className="send-button" disabled={!draft.trim()}>↑</button></form><p className="hint"><strong>Enter</strong> to send · <strong>Shift + Enter</strong> for a new line</p></footer>
+        <footer className="composer-wrap">{replying && <div className="replying"><span>Replying to <strong>{replying.author}</strong></span><button onClick={() => setReplying(null)}>×</button></div>}<form className={askMode ? "composer ask-mode" : "composer"} onSubmit={sendMessage}><button type="button" className="add-button" aria-label="Add attachment">＋</button><textarea value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={onKeyDown} placeholder={askMode ? "Ask Tashi anything…" : `Message #${currentRoom.name.toLowerCase().replaceAll(" ", "-")}`} rows={1} /><button type="button" aria-pressed={askMode} className={askMode ? "ask-button active" : "ask-button"} onClick={() => setAskMode(value => !value)}>✦ {askMode ? "Asking Tashi" : "Ask Tashi"}</button><button type="submit" className="send-button" disabled={!draft.trim()}>↑</button></form><p className="hint">{askMode ? <><strong>Tashi will answer your next message</strong> · click Asking Tashi to cancel</> : <><strong>Enter</strong> to send · <strong>Shift + Enter</strong> for a new line</>}</p></footer>
       </section>
 
       {membersOpen && <aside className="members-panel"><div className="panel-head"><h3>In this room</h3><button onClick={() => setMembersOpen(false)}>×</button></div>{[["Tashi", "AI teammate", "tashi", "T"], ["Ryk", "Available", "blue", "RK"], ["Maya", "Available", "coral", "MK"], ["Daniel", "In focus", "green", "DO"]].map(member => <div className="member" key={member[0]}><div className={`avatar ${member[2]}`}>{member[3]}</div><div><strong>{member[0]}</strong><span>{member[1]}</span></div></div>)}</aside>}
