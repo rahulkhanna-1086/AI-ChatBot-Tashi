@@ -11,12 +11,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const image = `${protocol}://${host}/og.png`;
-  const title = "Tashi — Think together";
-  const description = "A calm, collaborative space where people and AI think together.";
+  const title = "TASHI — Thoughtful AI for Shared Human Intelligence";
+  const description = "A shared workspace where thoughtful AI and human intelligence work together.";
   return {
     title,
     description,
-    openGraph: { title, description, images: [{ url: image, width: 1200, height: 630, alt: "Tashi — Think together" }] },
+    openGraph: { title, description, images: [{ url: image, width: 1200, height: 630, alt: "TASHI — Thoughtful AI for Shared Human Intelligence" }] },
     twitter: { card: "summary_large_image", title, description, images: [image] },
   };
 }

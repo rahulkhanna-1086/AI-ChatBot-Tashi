@@ -1,8 +1,8 @@
-# vinext-starter
+# TASHI — Thoughtful AI for Shared Human Intelligence
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+A persistent, real-time shared workspace where people and thoughtful AI think,
+share and build together. TASHI runs on [vinext](https://github.com/cloudflare/vinext)
+with Cloudflare D1 and Drizzle support.
 
 ## Prerequisites
 

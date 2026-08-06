@@ -148,11 +148,11 @@ export function TashiApp({ initialUser }: Props) {
     <main className={dark ? "app dark" : "app"}>
       <button className="mobile-menu" onClick={() => setMobileNav(true)} aria-label="Open rooms">☰</button>
       <aside className={`sidebar ${mobileNav ? "open" : ""}`}>
-        <div className="brand"><div className="brand-mark">T</div><div><h1>Tashi</h1><p>Think together</p></div><button className="close-mobile" onClick={() => setMobileNav(false)}>×</button></div>
+        <div className="brand"><div className="brand-mark">T</div><div><h1>TASHI</h1><p>Thoughtful AI</p></div><button className="close-mobile" onClick={() => setMobileNav(false)}>×</button></div>
         <nav className="rooms" aria-label="Rooms"><div className="section-label"><span>Shared rooms</span><button onClick={() => setNewRoomOpen(true)} aria-label="Create room">＋</button></div>
           {rooms.map(room => <button key={room.id} className={room.id === activeRoom ? "room active" : "room"} onClick={() => { setActiveRoom(room.id); setMobileNav(false); }}><span className="room-icon">{room.icon}</span><span>{room.name}</span>{room.messageCount > 0 && <small>{room.messageCount}</small>}</button>)}
         </nav>
-        <div className="sidebar-card"><div className="spark">✦</div><div><strong>Tashi is connected</strong><p>Mention @Tashi. Every reply is shared and remembered.</p></div></div>
+        <div className="sidebar-card"><div className="spark">✦</div><div><strong>Shared Human Intelligence</strong><p>Thoughtful AI helping people think, share and build together.</p></div></div>
         <div className="profile"><div className={`avatar ${currentUser.color}`}>{currentUser.initials}<span className="presence" /></div><div><strong>{currentUser.name}</strong><span>{connected ? "Live" : "Reconnecting…"}</span></div><button onClick={() => setDark(value => !value)} aria-label="Toggle theme">{dark ? "☀" : "◐"}</button></div>
       </aside>
 
