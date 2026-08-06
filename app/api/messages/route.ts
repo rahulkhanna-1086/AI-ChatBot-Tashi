@@ -1,6 +1,8 @@
 import { env } from "cloudflare:workers";
 import { initials, requireApiUser } from "../../../lib/workspace";
 
+export const dynamic = "force-dynamic";
+
 type MessageRow = { id: string; roomId: string; authorId: string | null; author: string; color: string | null; body: string; kind: "user" | "ai" | "system"; replyToId: string | null; replyAuthor: string | null; replyBody: string | null; createdAt: string };
 
 function shape(row: MessageRow, reactions: Array<{ messageId: string; emoji: string; count: number; active: number }> = []) {
@@ -32,7 +34,10 @@ export async function GET(request: Request) {
     FROM reactions WHERE message_id IN (SELECT id FROM messages WHERE room_id = ?)
     GROUP BY message_id, emoji
   `).bind(user.id, roomId).all<{ messageId: string; emoji: string; count: number; active: number }>();
-  return Response.json({ messages: rows.results.map(row => shape(row, reactionRows.results)) });
+  return Response.json(
+    { messages: rows.results.map(row => shape(row, reactionRows.results)) },
+    { headers: { "cache-control": "no-store, no-cache, must-revalidate, max-age=0" } },
+  );
 }
 
 export async function POST(request: Request) {

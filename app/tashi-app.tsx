@@ -60,7 +60,7 @@ export function TashiApp({ initialUser }: Props) {
   const loadMessages = useCallback(async (roomId: string, silent = false) => {
     if (!roomId) return;
     try {
-      const response = await fetch(`/api/messages?roomId=${encodeURIComponent(roomId)}`, { cache: "no-store" });
+      const response = await fetch(`/api/messages?roomId=${encodeURIComponent(roomId)}&_=${Date.now()}`, { cache: "no-store", headers: { "cache-control": "no-cache" } });
       const payload = await response.json() as { messages?: Message[]; error?: string };
       if (!response.ok) throw new Error(payload.error ?? "Could not load messages");
       if (activeRoomRef.current === roomId) setMessages(payload.messages ?? []);
@@ -104,7 +104,7 @@ export function TashiApp({ initialUser }: Props) {
       const payload = await response.json() as { storedMessage?: Message; error?: string };
       if (!response.ok) throw new Error(payload.error ?? "Tashi request failed");
       if (payload.storedMessage) setMessages(items => [...items.filter(item => item.id !== payload.storedMessage?.id), payload.storedMessage as Message]);
-      await loadMessages(room.id, true);
+      window.setTimeout(() => { void loadMessages(room.id, true); }, 1500);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Tashi is temporarily unavailable"); }
     finally { setThinking(false); }
   }

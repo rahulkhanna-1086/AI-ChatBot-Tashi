@@ -1,6 +1,8 @@
 import { env } from "cloudflare:workers";
 import { initials, requireApiUser } from "../../../lib/workspace";
 
+export const dynamic = "force-dynamic";
+
 const defaults = [
   ["general", "General", "A shared home for the whole team", "#"],
   ["product", "Product ideas", "Shape ideas into useful products", "✦"],
@@ -37,7 +39,7 @@ export async function GET() {
     user: { ...user, initials: initials(user.name) },
     rooms: rooms.results,
     members: members.results.map(member => ({ ...member, initials: initials(member.name), online: Boolean(member.online) })),
-  });
+  }, { headers: { "cache-control": "no-store, no-cache, must-revalidate, max-age=0" } });
 }
 
 export async function POST(request: Request) {

@@ -2,6 +2,8 @@ import { createProvider, type ChatTurn } from "../../../../lib/ai/provider";
 import { env } from "cloudflare:workers";
 import { requireApiUser } from "../../../../lib/workspace";
 
+export const dynamic = "force-dynamic";
+
 type Payload = { prompt?: unknown; room?: unknown; roomId?: unknown; history?: unknown };
 
 export async function POST(request: Request) {
