@@ -4,9 +4,11 @@ import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "driz
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   username: text("username").notNull(),
+  email: text("email"),
   avatarColor: text("avatar_color").notNull(),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-}, table => [uniqueIndex("idx_users_username").on(table.username)]);
+  lastSeenAt: text("last_seen_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, table => [uniqueIndex("idx_users_email").on(table.email)]);
 
 export const rooms = sqliteTable("rooms", {
   id: text("id").primaryKey(),
@@ -53,8 +55,8 @@ export const aiConversations = sqliteTable("ai_conversations", {
 export const settings = sqliteTable("settings", {
   userId: text("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
   theme: text("theme", { enum: ["light", "dark", "system"] }).notNull().default("system"),
-  provider: text("provider").notNull().default("openrouter"),
-  model: text("model").notNull().default("openai/gpt-oss-20b:free"),
+  provider: text("provider").notNull().default("groq"),
+  model: text("model").notNull().default("openai/gpt-oss-120b"),
   temperature: integer("temperature").notNull().default(65),
   systemPrompt: text("system_prompt").notNull().default(""),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
