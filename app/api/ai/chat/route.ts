@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         VALUES (?, ?, NULL, 'Tashi', ?, 'ai')
       `).bind(id, roomId, message).run();
       return Response.json({ message, provider: provider.name, storedMessage: {
-        id, roomId, authorId: null, author: "Tashi", initials: "T", color: "tashi", body, ai: true,
+        id, roomId, authorId: null, author: "Tashi", initials: "T", color: "tashi", body: message, ai: true,
         createdAt: new Date().toISOString(), reactions: [],
       } });
     }
